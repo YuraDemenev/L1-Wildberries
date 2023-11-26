@@ -12,7 +12,7 @@ func main() {
 
 	//Создаём waitgroup чтобы всё горутины отработали
 	var wg sync.WaitGroup
-	ch := make(chan int)
+	ch := make(chan int, len(nums))
 
 	for _, val := range nums {
 		//Увеличиваем счётчик
@@ -22,20 +22,15 @@ func main() {
 
 			//Пишем в канал
 			ch <- squere
-
-		}(val)
-
-		go func() {
-			//Достём данные из канала
-			sum += <-ch
-
-			//Уменьшаем счетчик
 			wg.Done()
-		}()
-
+		}(val)
 	}
-
 	wg.Wait()
+	close(ch)
+
+	for v := range ch {
+		sum += v
+	}
 
 	fmt.Fprintln(os.Stdout, sum)
 }

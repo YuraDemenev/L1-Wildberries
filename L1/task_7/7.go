@@ -7,6 +7,7 @@ import (
 
 func UseNormalMap(val int, myMap map[int]int, wg *sync.WaitGroup, mu *sync.Mutex) {
 	defer wg.Done()
+	//Блокируем для других горутин доступ к записи в map
 	mu.Lock()
 	myMap[val] = val
 	mu.Unlock()
@@ -19,11 +20,11 @@ func UseSyncMap(val int, myMap *sync.Map, wg *sync.WaitGroup) {
 
 func main() {
 	//Use a normal map
-	myMap := make(map[int]int, 50)
+	myMap := make(map[int]int, 10)
+	//Wait group чтобы все горутины отработали
 	var wg sync.WaitGroup
+	//Mutex чтобы небыло data race
 	var mu sync.Mutex
-
-	//Добавляю в Wait group 50 чтобы все 50 горутин сработали
 
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
@@ -40,12 +41,12 @@ func main() {
 
 	//Use a sync map
 	syncMap := sync.Map{}
-	//Добавляю в Wait group 50 чтобы все 50 горутин сработали
 
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go UseSyncMap(i, &syncMap, &wg)
 	}
+	wg.Wait()
 
 	fmt.Println("Add data in sync map")
 	syncMap.Range(func(key, value any) bool {

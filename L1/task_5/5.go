@@ -26,8 +26,11 @@ func main() {
 	ch := make(chan int)
 
 	fmt.Println("Write a time")
+	//Получаем время
 	var N int
 	fmt.Scan(&N)
+
+	//Создаём контекст чтобы завершить программу через N сек
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(N))
 	defer cancel()
 

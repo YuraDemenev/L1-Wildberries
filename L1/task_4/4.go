@@ -12,7 +12,6 @@ func worker(ctx context.Context, ch <-chan int, workerId int) {
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Printf("Worker %d end\n", workerId)
 			return
 		case val := <-ch:
 			fmt.Printf("Worker %d read number: %d\n", workerId, val)

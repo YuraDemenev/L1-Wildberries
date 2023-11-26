@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Остановка с использованием канала
 func StopWithChanell(stopCh chan struct{}) {
 
 	for {
@@ -21,6 +22,7 @@ func StopWithChanell(stopCh chan struct{}) {
 	}
 }
 
+// Остановка с использованием контекста
 func StopWithContext(ctx context.Context) {
 	for {
 		select {
@@ -50,14 +52,5 @@ func main() {
 
 	go StopWithContext(ctx)
 	time.Sleep(time.Second * 3)
-
-	//Для остановки через WaitGroup
-	// var wg sync.WaitGroup
-	// wg.Add(10)
-
-	// nums:=[]int{1,2,3,4,5,6,7,8,9,10}
-	// for _, v := range nums {
-
-	// }
 
 }

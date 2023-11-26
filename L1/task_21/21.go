@@ -2,31 +2,54 @@ package main
 
 import "fmt"
 
-type Sender interface {
-	sendMessage()
-}
-type Message struct {
+type TransportAdapter interface {
+	Start()
 }
 
-func (m *Message) EncryptionMessage() {
-	fmt.Println("Message was encrypt")
+//Класс машина
+type Car struct{}
+
+func (c *Car) CarStart() {
+	fmt.Println("Car is start")
 }
 
-type AdapterMessage struct {
-	*Message
+//Адаптер для машины
+type CarAdapter struct {
+	*Car
 }
 
-func (a *AdapterMessage) sendMessage() {
-	a.EncryptionMessage()
-	fmt.Println("Send message")
+//Заводим машину через адаптер
+func (adapter *CarAdapter) Start() {
+	adapter.CarStart()
 }
 
-func Messanger(send Sender) {
-	send.sendMessage()
+//Класс вертолёт
+type Helicopter struct{}
+
+func (h *Helicopter) HelicopterStart() {
+	fmt.Println("Helicopter start")
+}
+
+//Адаптер для вертолёта
+type HelicopterAdapter struct {
+	*Helicopter
+}
+
+//Заводим вертолёт через адаптер
+func (adapter *HelicopterAdapter) Start() {
+	adapter.HelicopterStart()
+}
+
+func startTransport(transport TransportAdapter) {
+	transport.Start()
 }
 
 func main() {
-	message := &Message{}
-	adapter := &AdapterMessage{message}
-	Messanger(adapter)
+	//Создаём транспорт
+	car := &CarAdapter{}
+	helicopter := &HelicopterAdapter{}
+
+	//Запускаем транспорт через функцию
+	startTransport(car)
+	startTransport(helicopter)
 }

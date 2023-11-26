@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func Writer(val int, wg *sync.WaitGroup, chInput chan int, chOutput chan int) {
+func Writer(val int, wg *sync.WaitGroup, chInput chan int) {
 	//Чтобы Wait group уменьшил счётчик на 1
 	defer wg.Done()
 
@@ -13,8 +13,17 @@ func Writer(val int, wg *sync.WaitGroup, chInput chan int, chOutput chan int) {
 	chInput <- val
 
 	//Возводим в квадрат и пишем во 2 канал
-	val *= val
-	chOutput <- val
+
+}
+
+func Reader(chOutput chan int, chInput chan int) {
+	//Считываем данные из канала
+	for v := range chInput {
+		v *= v
+		chOutput <- v
+	}
+	//Закрываем канал
+	close(chOutput)
 }
 
 func main() {
@@ -30,12 +39,15 @@ func main() {
 	//В цикле передаём числа Writer
 	for _, v := range nums {
 		wg.Add(1)
-		go Writer(v, &wg, chInput, chOutput)
+		go Writer(v, &wg, chInput)
 	}
 	wg.Wait()
-	close(chOutput)
+	//Закрываем канал
+	close(chInput)
 
-	//Получаем все чисал
+	Reader(chOutput, chInput)
+
+	//Получаем все числа
 	for val := range chOutput {
 		fmt.Println(val)
 	}
